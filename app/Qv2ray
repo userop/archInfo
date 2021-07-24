@@ -1,0 +1,8 @@
+# 主要是由客户端和核心程序组成
+client:
+  https://github.com/Qv2ray/Qv2ray/releases/  # download  AppImage
+
+core:
+  https://github.com/v2ray/v2ray-core/releases/ # last version zip
+
+>> https://www.zsxcool.com/7137.html

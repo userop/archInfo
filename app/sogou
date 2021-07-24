@@ -1,0 +1,21 @@
+# archlinux + ukui
+# install fcitx and sogoupinyin
+sudo pacman -S fcitx fcitx-qt5 fcitx-configtool
+
+cd ~/Software/AUR
+git clone https://github.com/laomocode/fcitx-sogouimebs.git
+cd fcitx-sogouimebs
+makepkg -si
+
+# config fcitx
+~/.pam_environment
+
+GTK_IM_MODULE=fcitx
+QT_IM_MODULE=fcitx
+XMODIFIERS=@im=fcitx
+
+# gui fcitx-configtool
+fcitx-configtool # bash
+# 在界面中input method找到sogouimebs并添加
+
+>>  https://www.limstash.com/articles/202007/1740
