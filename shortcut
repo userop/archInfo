@@ -1,0 +1,5 @@
+# 图形界面和文本命令行  转换和切换
+Ctrl+Alt+<F2>  # Gui -> bash
+Ctrl+Alt+<F7>  # bash -> Gui
+
+# 从当前的使用效果来看，archlinux+ukui是比较好用的
