@@ -1,0 +1,158 @@
+1 创建U盘启动器 （linux上可以用dd命令，windows上用的工具自行选择）
+2 开启启动进入U盘启动选项
+   * 如果BIOS不支持U盘，要先设置
+3 开机进入U盘启动 （不同的电脑按键有点区别，F2,F8,F12，我的笔记本是F12）
+
+4 进入U盘系统后选择第一个选项进入U盘上的archlinux
+5 联网
+
+iwctl
+device list  # 查看网卡驱动，我的是一张卡，wlan0
+station wlan0 scan
+staion wlan0 get-networks
+station wlan connect WIFI  # 这里回车后需要输入密码
+exit
+
+ping www.baidu.com # 检查网络连接
+
+timedatectl set-ntp true
+timedatectl list-timezones  # 查看时区，我设的上海时区 | grep Shanghai
+timedatectl set-timezone Asia/Shanghai
+
+reflector -c china -a 10 --sort rate --save /etc/pacman.d/mirrorlist  # address for china sort by rate save to /etc/pacman.d/mirrorlist
+
+6 磁盘分区
+200M  ----- /boot/EFI
+300M  ----- /boot
+others ---- /
+
+# my disk: 1T = windows(100M+470G)+archlinux(free space)
+/sda
+ /nvm..p1   # use the true name
+ /nvm..p2
+
+lsblk
+fdisk /dev/sda  # disk name
+m # list command
+n  # add new part
+5  # nvm..p5
+ENTER  # start of new part.
++200M
+
+m
+n
+6
+ENTER
++300M
+
+m
+n
+7
+ENTER
+ENTER
+
+w  # save and exit
+
+lsblk
+
+mkfs.fat -F32 /dev/nvm..p5  # use true name
+mkfs.ext4 /dev/nvm..p6
+mkfs.ext4 /dev/nvm..p7
+
+7 mount dist to system
+
+mount /dev/nvm..p7 /mnt
+mkdir /mnt/boot
+mount /dev/nvm..p6 /mnt/boot
+mkdir /mnt/boot/EFI
+mount /dev/nvm..p5 /mnt/boot/EFI
+
+8 install linux 
+
+pacstrap -i /mnt base base-devel linux linux-firmware
+
+9 mount disk when compute turn off
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+cat /mnt/etc/fstab  ## have a check
+
+10 
+
+arch-chroot /mnt /bin/bash
+
+11 base setting 
+
+yes | sudo pacman -S vim
+vim /etc/locale.gen   ## "#en_US.UTF-8 UTF-8" -> "en_US.UTF-8 UTF-8"; "#zh_CN.UTF-8 UTF-8" -> "zh_CN.UTF-8 UTF-8"
+
+locale-gen
+echo LANG=en_US.UTF-8 > /etc/locale.conf
+
+hwclock --systohc -utc
+
+## UEFI grub
+pacman -S dosfstools grub efibootmgr
+
+grub-install --target=x86_64-efi --efi-directory=/boot/EFI --recheck
+
+grub-mkconfig -o /boot/grub/grub.cfg
+
+## user manager
+passwd   ## set root password
+
+useradd -m -g users -s /bin/bash <name>
+
+passwd <name>
+
+vim /etc/sudoers   #  add <name> ALL=(ALL) ALL after root ALL=(ALL) ALL by line
+
+## network
+pacman -S dhcpcd  #
+pacman -S iwd  # wifi
+
+## DNS
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+echo "nameserver 114.114.114.114" >> /etc/resolv.conf
+echo "nameserver 202.106.0.20" >> /etc/resolv.conf  ## 联通DNS server
+
+## hosts
+echo "127.0.0.1    localhost" >> /etc/hosts
+echo "::1          localhost" >> /etc/hosts
+echo "127.0.1.1    myhostname.localdomain    myhostname" >> /etc/hosts  # no tensor
+
+## iwd 
+echo "[General]" >> /etc/iwd/main.conf
+echo "EnableNetworkConfiguration=true" >> /etc/iwd/main.conf
+
+reboot
+
+
+12 
+systemctl start dhcpcd
+systemctl enable dhcpcd
+systemctl start iwd
+systemctl enable iwd
+
+# connect wifi
+
+13 lspci | grep VGA
+
+#  intel-   xf86-video-intel
+#  amdgpu   xf86-video-amdgpu
+#  Geforce7(+-) xf86-video-nouveau
+#  Geforce6/7 xf86-video-304xx
+#  ati      xf86-video-ati
+
+sudo pacman -S xorg
+sudo pacman -S xf86-input-synaptics
+sudo pacman -S ttf-dejavu wqy-microhei
+sudo pacman -S terminator
+
+14 IKUI 
+sudo pacman -S ukui xorg-server ukui
+sudo systemctl enable lightdm
+
+reboot
+
