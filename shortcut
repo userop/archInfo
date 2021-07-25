@@ -3,3 +3,17 @@ Ctrl+Alt+<F2>  # Gui -> bash
 Ctrl+Alt+<F7>  # bash -> Gui
 
 # 从当前的使用效果来看，archlinux+ukui是比较好用的
+
+# 设置goland/pycharm/clion/等 自己安装的软件的桌面快捷方式，
+cd /usr/share/application/
+nvim pycharm.desktop
+
+[Desktop Entry]
+Type=Application
+Name=PyCharm
+GenericName=PyCharm
+Comment=PyCharm
+Exec=pycharm
+Icon=/opt/pycharm/bin/pycharm.png  # pycharm install path
+Terminal=pycharm
+Categories=PyCharm
