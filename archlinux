@@ -156,3 +156,14 @@ sudo systemctl enable lightdm
 
 reboot
 
+## 使用pacman安装的软件包比如git，自动补全功能需要配置才会生效
+# ~/.bashrc
+
+if [ -d /usr/share/bash-completion/completions ]; then
+  ¦completFiles=($(ls /usr/share/bash-completion/completions))
+  ¦for fileName in ${completFiles[*]}
+  ¦do
+  ¦ ¦ source /usr/share/bash-completion/completions/$fileName
+  ¦done
+fi
+
