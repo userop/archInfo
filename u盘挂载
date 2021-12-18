@@ -1,0 +1,4 @@
+# 不能直接识别ntfs格式，需要用ntfs-3g来实现window磁盘格式挂载
+sudo pacman -S ntfs-3g 
+mount -t ntfs-3g /dev/disk /mnt/temp/
+
