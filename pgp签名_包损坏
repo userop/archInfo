@@ -1,0 +1,9 @@
+当pgp签名失效以后，更新的动作会导致检查出来包无效
+
+sudo rm -r /etc/pacman.d/gnupg
+sudo pacman -Sy gnupg archlinux-keyring manjaro-keyring
+sudo pacman-key --init
+sudo pacman-key --populate archlinux manjaro 
+sudo pacman-key --refresh-keys 
+sudo pacman -Sc
+
